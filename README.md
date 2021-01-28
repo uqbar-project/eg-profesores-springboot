@@ -132,5 +132,5 @@ def getMateria(@PathVariable Long id) {
 
 ## Diagrama entidad-relación
 
-![Solución](docs/DER.png)
+![Solución](./images/DER.png)
 
