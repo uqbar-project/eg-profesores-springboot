@@ -1,5 +1,7 @@
 package ar.edu.unsam.profesores.controller
 
+import ar.edu.unsam.profesores.dao.MateriaRepository
+import ar.edu.unsam.profesores.dao.ProfesorRepository
 import ar.edu.unsam.profesores.domain.Profesor
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -23,6 +25,12 @@ class ProfesorControllerTest {
 	@Autowired
 	MockMvc mockMvc
 
+	@Autowired
+	ProfesorRepository repoProfes
+
+	@Autowired
+	MateriaRepository repoMaterias
+	
 	@Test
 	@DisplayName("podemos consultar todos los profesores")
 	def void profesoresHappyPath() {
@@ -53,7 +61,22 @@ class ProfesorControllerTest {
 	@Test
 	@DisplayName("podemos actualizar la información de un profesor")
 	def void actualizarProfesor() {
-		// TODO
+		val idProfesor = 1L
+		val profesor = getProfesor(idProfesor)
+		val materias = repoMaterias.findByNombre("Diseño de Sistemas")
+		assertEquals(1, materias.size)
+		profesor.agregarMateria	(materias.head)
+		val profesorBody = mapper.writeValueAsString(profesor)
+		val responseEntityPut = mockMvc.perform(
+			MockMvcRequestBuilders.put("/profesores/" + idProfesor).contentType("application/json").content(profesorBody)).andReturn.
+			response
+		assertEquals(200, responseEntityPut.status, "Error al actualizar los profesores " + responseEntityPut.errorMessage)
+		val nuevoProfesor = getProfesor(idProfesor)
+		val materiasDelProfesor = profesor.materias.size
+		assertEquals(materiasDelProfesor, nuevoProfesor.materias.size)
 	}
 
+	def Profesor getProfesor(long idProfesor) {
+		repoProfes.findById(idProfesor).map [ it ].orElseThrow [ new RuntimeException("Profesor con identificador " + idProfesor + " no existe") ]
+	}
 }

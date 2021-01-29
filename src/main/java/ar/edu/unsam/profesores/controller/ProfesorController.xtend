@@ -23,9 +23,7 @@ class ProfesorController {
 
 	@GetMapping("/profesores")
 	def getProfesores() {
-		val result = this.profesorRepository.findAll.map [ ProfesorBasicoDTO.fromProfesor(it) ].toList
-		println("result " + result.map [ id ])
-		result
+		this.profesorRepository.findAll.map [ ProfesorBasicoDTO.fromProfesor(it) ].toList
 	}
 
 	@GetMapping("/profesores/{id}")
