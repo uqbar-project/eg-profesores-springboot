@@ -35,7 +35,11 @@ class Profesor implements Serializable {
 	def void agregarMateria(Materia materia) {
 		materias.add(materia)
 	}
-	
+
+	def void quitarMateria(Materia materia) {
+		materias.remove(materia)
+	}
+		
 	def boolean dicta(Materia materia) {
 		materias.contains(materia)
 	}

@@ -65,15 +65,23 @@ class ProfesorControllerTest {
 		val profesor = getProfesor(idProfesor)
 		val materias = repoMaterias.findByNombre("Diseño de Sistemas")
 		assertEquals(1, materias.size)
-		profesor.agregarMateria	(materias.head)
+		val materiaNueva = materias.head
+		profesor.agregarMateria(materiaNueva)
+		updateProfesor(idProfesor, profesor)
+		val nuevoProfesor = getProfesor(idProfesor)
+		val materiasDelProfesor = profesor.materias.size
+		assertEquals(materiasDelProfesor, nuevoProfesor.materias.size)
+		// Pero ojo, como esto tiene efecto colateral, vamos a volver atrás el cambio
+		profesor.quitarMateria(materiaNueva)
+		updateProfesor(idProfesor, profesor)
+	}
+	
+	protected def void updateProfesor(long idProfesor, Profesor profesor) {
 		val profesorBody = mapper.writeValueAsString(profesor)
 		val responseEntityPut = mockMvc.perform(
 			MockMvcRequestBuilders.put("/profesores/" + idProfesor).contentType("application/json").content(profesorBody)).andReturn.
 			response
 		assertEquals(200, responseEntityPut.status, "Error al actualizar los profesores " + responseEntityPut.errorMessage)
-		val nuevoProfesor = getProfesor(idProfesor)
-		val materiasDelProfesor = profesor.materias.size
-		assertEquals(materiasDelProfesor, nuevoProfesor.materias.size)
 	}
 
 	def Profesor getProfesor(long idProfesor) {
