@@ -30,6 +30,8 @@ class ProfesorControllerTest {
 		val profesores = responseEntity.contentAsString.fromJsonToList(Profesor)
 		assertEquals(200, responseEntity.status)
 		assertEquals(3, profesores.size)
+		// los profesores no traen las materias
+		assertEquals(0, profesores.head.materias.size)
 	}
 
 	@Test
@@ -37,6 +39,8 @@ class ProfesorControllerTest {
 	def void profesorExistenteConMaterias() {
 		val responseEntity = mockMvc.perform(MockMvcRequestBuilders.get("/profesores/1")).andReturn.response
 		assertEquals(200, responseEntity.status)
+		val profesor = responseEntity.contentAsString.fromJson(Profesor)
+		assertEquals(2, profesor.materias.size)
 	}
 
 	@Test
@@ -44,6 +48,12 @@ class ProfesorControllerTest {
 	def void profesorInexistente() {
 		val responseEntity = mockMvc.perform(MockMvcRequestBuilders.get("/profesores/100")).andReturn.response
 		assertEquals(404, responseEntity.status)
+	}
+
+	@Test
+	@DisplayName("podemos actualizar la información de un profesor")
+	def void actualizarProfesor() {
+		// TODO
 	}
 
 }

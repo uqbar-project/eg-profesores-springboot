@@ -7,6 +7,10 @@ import java.util.List
 
 class TestHelpers {
 	
+	static def <T extends Object> fromJson(String json, Class<T> expectedType) {
+		mapper.readValue(json, expectedType)
+	}
+
 	static def <T extends Object> List<T> fromJsonToList(String json, Class<T> expectedType) {
 		val type = mapper.getTypeFactory().constructCollectionType(List, expectedType)
 		mapper.readValue(json, type)
