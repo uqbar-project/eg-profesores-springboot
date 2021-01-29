@@ -23,12 +23,18 @@ class ProfesorController {
 
 	@GetMapping("/profesores")
 	def getProfesores() {
-		this.profesorRepository.findAll.map [ ProfesorBasicoDTO.fromProfesor(it) ].toList
+		val result = this.profesorRepository.findAll.map [ ProfesorBasicoDTO.fromProfesor(it) ].toList
+		println("result " + result.map [ id ])
+		result
 	}
 
 	@GetMapping("/profesores/{id}")
 	def getProfesor(@PathVariable Long id) {
-		this.profesorRepository.findById(id)
+		this.profesorRepository.findById(id).map([ profesor | 
+			profesor
+		]).orElseThrow([
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "El profesor con identificador " + id + " no existe")
+		])
 	}
 
 	@PutMapping("/profesores/{id}")
@@ -36,7 +42,8 @@ class ProfesorController {
 
 		profesorRepository.findById(id).map([ profesor |
 			profesor => [
-				// solo modificamos lo que está disponible para cambiar en la aplicación
+				nombreCompleto = profesorNuevo.nombreCompleto
+				materias = profesorNuevo.materias
 			]
 			//
 			profesorRepository.save(profesor)

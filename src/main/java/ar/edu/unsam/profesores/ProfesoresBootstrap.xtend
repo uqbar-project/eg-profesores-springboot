@@ -26,6 +26,7 @@ class ProfesoresBootstrap implements InitializingBean {
 		println("************************************************************************")
 		println("Running initialization")
 		println("************************************************************************")
+		println("repo profes " + repoProfes)
 		init
 	}
 	

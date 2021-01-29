@@ -29,10 +29,10 @@ Un profesor dicta una o varias materias, y a su vez cada materia es dictada por 
 
 ## Endpoints comunes
 
-- GET | `./profesores/`: devuelve la lista de profesores, sin las materias
-- GET | `./profesores/{id}`: devuelve los datos de un profesor con sus materias
-- GET | `./materias/`: devuelve la lista de materias
-- PUT | `./profesores/{id}`: actualiza un profesor con los datos del body
+- `GET ./profesores/`: devuelve la lista de profesores, sin las materias
+- `GET ./profesores/{id}`: devuelve los datos de un profesor con sus materias
+- `GET ./materias/`: devuelve la lista de materias
+- `PUT ./profesores/{id}`: actualiza un profesor con los datos del body
 
 ## Endpoint especial
 
@@ -94,9 +94,9 @@ Podemos mapear el atributo de nuestro DTO con otro nombre, mediante la anotació
 
 ```xtend
 interface MateriaFullRowDTO {
-	def Long getId()
-	@Value("#{target.nombre}")
-	def String getNombreLindo()
+  def Long getId()
+  @Value("#{target.nombre}") // el formato es "target".{atributo del query}
+  def String getNombreLindo()
   ...
 }
 ```

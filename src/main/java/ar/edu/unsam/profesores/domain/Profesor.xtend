@@ -17,7 +17,10 @@ import org.eclipse.xtend.lib.annotations.Accessors
 class Profesor implements Serializable {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	// El GenerationType asociado a la TABLE es importante para tener
+	// una secuencia de identificadores única para los profesores
+	// (para que no dependa de otras entidades anteriormente creadas)
+	@GeneratedValue(strategy = GenerationType.TABLE)
 	Long id
 
 	@Column

@@ -6,21 +6,9 @@ spring:
         password: 
         driver-class-name: com.mysql.cj.jdbc.Driver
 
-#    base de datos in-memory
-#    datasource:
-#        url: jdbc:h2:mem:test
-#        username: sa
-#        password: sa
-#        driver-class-name: org.h2.Driver
     jpa:
-#
         open-in-view: false
-# base de datos in-memory
-#        database: H2
         show-sql: true
-        database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
         hibernate:
             format_sql: true
             ddl-auto: create-drop
-            dialect: org.hibernate.dialect.MySQL5InnoDBDialect
-            pool_size: 50
