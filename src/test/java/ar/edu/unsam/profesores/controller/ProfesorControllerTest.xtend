@@ -22,6 +22,8 @@ import static extension ar.edu.unsam.profesores.controller.TestHelpers.*
 @DisplayName("Dado un controller de profesores")
 class ProfesorControllerTest {
 
+	static val ID_PROFESOR = 1L
+
 	@Autowired
 	MockMvc mockMvc
 
@@ -45,7 +47,7 @@ class ProfesorControllerTest {
 	@Test
 	@DisplayName("al traer el dato de un profesor trae las materias en las que participa")
 	def void profesorExistenteConMaterias() {
-		val responseEntity = mockMvc.perform(MockMvcRequestBuilders.get("/profesores/1")).andReturn.response
+		val responseEntity = mockMvc.perform(MockMvcRequestBuilders.get("/profesores/" + ID_PROFESOR)).andReturn.response
 		assertEquals(200, responseEntity.status)
 		val profesor = responseEntity.contentAsString.fromJson(Profesor)
 		assertEquals(2, profesor.materias.size)
@@ -61,19 +63,18 @@ class ProfesorControllerTest {
 	@Test
 	@DisplayName("podemos actualizar la información de un profesor")
 	def void actualizarProfesor() {
-		val idProfesor = 1L
-		val profesor = getProfesor(idProfesor)
+		val profesor = getProfesor(ID_PROFESOR)
 		val materias = repoMaterias.findByNombre("Diseño de Sistemas")
 		assertEquals(1, materias.size)
 		val materiaNueva = materias.head
 		profesor.agregarMateria(materiaNueva)
-		updateProfesor(idProfesor, profesor)
-		val nuevoProfesor = getProfesor(idProfesor)
+		updateProfesor(ID_PROFESOR, profesor)
+		val nuevoProfesor = getProfesor(ID_PROFESOR)
 		val materiasDelProfesor = profesor.materias.size
 		assertEquals(materiasDelProfesor, nuevoProfesor.materias.size)
 		// Pero ojo, como esto tiene efecto colateral, vamos a volver atrás el cambio
 		profesor.quitarMateria(materiaNueva)
-		updateProfesor(idProfesor, profesor)
+		updateProfesor(ID_PROFESOR, profesor)
 	}
 	
 	protected def void updateProfesor(long idProfesor, Profesor profesor) {
