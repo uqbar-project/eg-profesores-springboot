@@ -3,6 +3,7 @@ package ar.edu.unsam.profesores.controller
 import ar.edu.unsam.profesores.dao.ProfesorRepository
 import ar.edu.unsam.profesores.domain.Profesor
 import ar.edu.unsam.profesores.serializer.ProfesorBasicoDTO
+import io.swagger.annotations.ApiOperation
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -22,11 +23,13 @@ class ProfesorController {
 	ProfesorRepository profesorRepository
 
 	@GetMapping("/profesores")
+	@ApiOperation("Permite conocer todas las personas que dan clase.")
 	def getProfesores() {
 		this.profesorRepository.findAll.map [ ProfesorBasicoDTO.fromProfesor(it) ].toList
 	}
 
 	@GetMapping("/profesores/{id}")
+	@ApiOperation("Dado un identificador de una persona que es profesora, podemos conocer su información, incluyendo las materias que dicta.")
 	def getProfesor(@PathVariable Long id) {
 		this.profesorRepository.findById(id).map([ profesor | 
 			profesor
@@ -36,6 +39,7 @@ class ProfesorController {
 	}
 
 	@PutMapping("/profesores/{id}")
+	@ApiOperation("Permite actualizar la información de una persona que es profesora.")
 	def actualizarCandidato(@RequestBody Profesor profesorNuevo, @PathVariable Long id) {
 
 		profesorRepository.findById(id).map([ profesor |

@@ -3,6 +3,7 @@ package ar.edu.unsam.profesores.controller
 import ar.edu.unsam.profesores.dao.MateriaRepository
 import ar.edu.unsam.profesores.serializer.MateriaDTO
 import ar.edu.unsam.profesores.serializer.ProfesorDTO
+import io.swagger.annotations.ApiOperation
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.CrossOrigin
@@ -20,11 +21,13 @@ class MateriaController {
 	MateriaRepository materiaRepository
 	
 	@GetMapping(value = "/materias")
+	@ApiOperation("Permite conocer todas las materias cargadas en el sistema")
 	def getZonas() {
 		this.materiaRepository.findAll
 	}
   
 	@GetMapping(value="/materias/{id}")
+	@ApiOperation("Dado un identificador de una materia, permite conocer sus datos y todas las personas que la dictan.")
   def getMateria(@PathVariable Long id) {
 
 		// Recibimos n registros de materias

@@ -255,6 +255,14 @@ Por último, tenemos un test de integración que va a producir un efecto colater
 	}
 ```
 
+## Open API / Swagger
+
+El proyecto viene con las dependencias de Swagger2 por lo tanto podés testearlo directamente en el navegador cuando levantes la aplicación en la siguiente URL:
+
+```url
+http://localhost:8080/swagger-ui/index.html#
+```
+
 ## Material adicional
 
 - [Artículo de Baeldung](https://www.baeldung.com/jpa-many-to-many), donde define la relación en forma bidireccional
