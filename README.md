@@ -263,11 +263,12 @@ Por último, tenemos un test de integración que va a producir un efecto colater
 - tomar la información de un profesor
 - producir un efecto (dictará una materia nueva) y persistir ese efecto haciendo una llamada http PUT
 - hacer la llamada GET verificando que el efecto se persitió (comparando con el valor que tenía antes del cambio)
-- y por último, desharemos el cambio manualmente para eliminar la dependencia entre tests (de lo contrario el orden en el que evaluemos los casos de prueba pueden ser exitosos o fallidos, lo que se conoce como [_flaky test_](https://engineering.atspotify.com/2019/11/18/test-flakiness-methods-for-identifying-and-dealing-with-flaky-tests/))
+- la anotación `@DirtiesContext` asegura hacer un rollback de la transacción para que los cambios que hicimos dentro del test no se persistan. Esto elimina la dependencia entre tests (de lo contrario el orden en el que evaluemos los casos de prueba pueden ser exitosos o fallidos, lo que se conoce como [_flaky test_](https://engineering.atspotify.com/2019/11/18/test-flakiness-methods-for-identifying-and-dealing-with-flaky-tests/))
 
 ```xtend
 	@Test
 	@DisplayName("podemos actualizar la información de un profesor")
+	@DirtiesContext
 	def void actualizarProfesor() {
 		val profesor = getProfesor(ID_PROFESOR)
 		val materias = repoMaterias.findByNombre("Diseño de Sistemas")
@@ -297,6 +298,3 @@ http://localhost:8080/swagger-ui/index.html#
 - [Artículo de Baeldung](https://www.baeldung.com/jpa-many-to-many), donde define la relación en forma bidireccional
 - [Artículo de Stack Overflow](https://stackoverflow.com/questions/42394095/many-to-many-relationship-between-two-entities-in-spring-boot)
 - [Testeo unitario y testeo de integración](https://www.testim.io/blog/unit-test-vs-integration-test/)
-
-
-

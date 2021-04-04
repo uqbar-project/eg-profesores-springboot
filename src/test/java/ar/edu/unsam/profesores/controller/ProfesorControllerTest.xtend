@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import static org.junit.jupiter.api.Assertions.assertEquals
 
 import static extension ar.edu.unsam.profesores.controller.TestHelpers.*
+import org.springframework.test.annotation.DirtiesContext
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -62,6 +63,7 @@ class ProfesorControllerTest {
 
 	@Test
 	@DisplayName("podemos actualizar la información de un profesor")
+	@DirtiesContext
 	def void actualizarProfesor() {
 		val profesor = getProfesor(ID_PROFESOR)
 		val materias = repoMaterias.findByNombre("Diseño de Sistemas")
@@ -72,9 +74,6 @@ class ProfesorControllerTest {
 		val nuevoProfesor = getProfesor(ID_PROFESOR)
 		val materiasDelProfesor = profesor.materias.size
 		assertEquals(materiasDelProfesor, nuevoProfesor.materias.size)
-		// Pero ojo, como esto tiene efecto colateral, vamos a volver atrás el cambio
-		profesor.quitarMateria(materiaNueva)
-		updateProfesor(ID_PROFESOR, profesor)
 	}
 	
 	protected def void updateProfesor(long idProfesor, Profesor profesor) {
