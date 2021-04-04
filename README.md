@@ -279,9 +279,6 @@ Por último, tenemos un test de integración que va a producir un efecto colater
 		val nuevoProfesor = getProfesor(ID_PROFESOR)
 		val materiasDelProfesor = profesor.materias.size
 		assertEquals(materiasDelProfesor, nuevoProfesor.materias.size)
-		// Pero ojo, como esto tiene efecto colateral, vamos a volver atrás el cambio
-		profesor.quitarMateria(materiaNueva)
-		updateProfesor(ID_PROFESOR, profesor)
 	}
 ```
 
