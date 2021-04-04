@@ -41,7 +41,7 @@ Un profesor dicta una o varias materias, y a su vez cada materia es dictada por 
 
 ## Endpoint especial
 
-- GET | `./materias/{id}`: devuelve una materia, con sus profesores. 
+- `GET ./materias/{id}`: devuelve una materia, con sus profesores. 
 
 Una decisión de diseño importante que tomamos fue **no tener referencias bidireccionales** (de profesor a materias y de materia a profesores). El primer motivo es didático, el segundo es que mantener esa relación bidireccional tiene un costo y debemos decidir quién es el dueño de esa relación (para no entrar en loop al agregar un profesor a una materia, además del agregado en cada una de las colecciones). Pueden consultar [este post de Stack overflow](https://stackoverflow.com/questions/22461613/pros-and-cons-of-jpa-bidirectional-relationships) para más información.
 
@@ -74,7 +74,9 @@ nos devuelva
 
 Para ello vamos a necesitar dos pasos:
 
-1. Aprovechar que el modelo relacional nos permite hacer un JOIN partiendo de cualquiera de las entidades (tiene una navegación más flexible que el modelo de grafo de objetos). Haremos un query en [JPQL](https://es.wikipedia.org/wiki/Java_Persistence_Query_Language) (Java Persistence Query Language), una variante de SQL que trata de acercarse más al paradigma de objetos.
+### Paso 1: Query con el producto cartesiano de materias y profesores
+
+Aprovechamos que el modelo relacional nos permite hacer un JOIN partiendo de cualquiera de las entidades (tiene una navegación más flexible que el modelo de grafo de objetos). Haremos un query en [JPQL](https://es.wikipedia.org/wiki/Java_Persistence_Query_Language) (Java Persistence Query Language), una variante de SQL que trata de acercarse más al paradigma de objetos.
 
 ```xtend
 	@Query("SELECT m.id as id, m.nombre as nombre, m.anio as anio, p.id as profesorId, p.nombreCompleto as profesorNombre FROM Profesor p INNER JOIN p.materias m WHERE m.id = :id")
@@ -83,7 +85,34 @@ Para ello vamos a necesitar dos pasos:
 
 El resultado de esa consulta son n registros, porque es el producto cartesiano de 1 materia con n profesores.
 
-El DTO es una interfaz, donde por convención los atributos se corresponden con el alias que le pusimos en el query:
+```xtend
+interface MateriaFullRowDTO {
+	def Long getId()
+	@Value("#{target.nombre}")
+	def String getNombreLindo()
+	def int getAnio()
+	def Long getProfesorId()
+	def String getProfesorNombre()
+}
+```
+
+Es decir que para el ejemplo de la materia Paradigmas esperamos el siguiente output:
+
+| Id Materia | NombreLindo (nombre) | Anio | Id Profesor | Profesor Nombre | 
+|--- | --- | --- | --- | --- |
+| 1 | Paradigmas | 2 | 5 | Lucas Spigariol
+| 1 | Paradigmas | 2 | 9 | Nicolás Passerini
+
+El atributo `nombre` de la materia se mapea a nuestro DTO como `nombreLindo`, mediante la anotación `@Value`:
+
+```xtend
+@Value("#{target.nombre}") // el formato es "target".{atributo del query, en este caso: nombre}
+def String getNombreLindo()
+```
+
+### Paso 2: Agrupar 1 materia / n profesores
+
+Como queremos que el endpoint devuelva una sola entidad materia, vamos a agrupar todos los profesores en una lista, y tomaremos la información de la materia una sola vez (porque sabemos que las otras filas simplemente repiten el dato). Definimos una clase MateriaDTO que es el verdadero output de nuestro endpoint:
 
 ```xtend
 @Data
@@ -95,18 +124,7 @@ class MateriaDTO {
 }
 ```
 
-Podemos mapear el atributo de nuestro DTO con otro nombre, mediante la anotación `@Value`:
-
-```xtend
-interface MateriaFullRowDTO {
-  def Long getId()
-  @Value("#{target.nombre}") // el formato es "target".{atributo del query}
-  def String getNombreLindo()
-  ...
-}
-```
-
-2. Como queremos que el endpoint devuelva una sola entidad materia, vamos a agrupar todos los profesores en una lista, y tomaremos la información de la materia una sola vez (porque sabemos que las otras filas simplemente repiten el dato):
+Y ahora en el controller transformamos el MateriaFullDTO a MateriaDTO:
 
 ```xtend
 @GetMapping(value="/materias/{id}")
@@ -122,13 +140,17 @@ def getMateria(@PathVariable Long id) {
   }
   
   // Agrupamos los profesores de la materia
+	// --- esta parte podría haber estado en un objeto service autowired
   val materia = materiasDTO.head
   val profesores = materiasDTO.map [ materiaDTO |
     new ProfesorDTO(materiaDTO.profesorId, materiaDTO.profesorNombre) 
   ]
   new MateriaDTO(materia.id, materia.nombreLindo, materia.anio, profesores)
+	// ---
 }
 ```
+
+Si tuviéramos que agrupar varias materias a la vez, necesitamos resolverlo mediante un [algoritmo de corte de control](https://uniwebsidad.com/libros/algoritmos-python/capitulo-13/corte-de-control).
 
 ## Testing
 
