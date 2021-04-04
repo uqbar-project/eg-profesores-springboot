@@ -48,7 +48,7 @@ class Profesor implements Serializable {
 		nombreCompleto + " (" + id + ")"
 	}
 	
-	def clearMaterias() {
+	def borrarMaterias() {
 		materias.clear()
 	}
 	
