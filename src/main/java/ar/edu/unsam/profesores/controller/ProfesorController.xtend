@@ -31,9 +31,7 @@ class ProfesorController {
 	@GetMapping("/profesores/{id}")
 	@ApiOperation("Dado un identificador de una persona que es profesora, podemos conocer su información, incluyendo las materias que dicta.")
 	def getProfesor(@PathVariable Long id) {
-		this.profesorRepository.findById(id).map([ profesor | 
-			profesor
-		]).orElseThrow([
+		this.profesorRepository.findById(id).orElseThrow([
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "El profesor con identificador " + id + " no existe")
 		])
 	}

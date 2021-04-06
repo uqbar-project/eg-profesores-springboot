@@ -3,6 +3,7 @@ package ar.edu.unsam.profesores.controller
 import ar.edu.unsam.profesores.dao.MateriaRepository
 import ar.edu.unsam.profesores.dao.ProfesorRepository
 import ar.edu.unsam.profesores.domain.Profesor
+import javax.transaction.Transactional
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,7 +16,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import static org.junit.jupiter.api.Assertions.assertEquals
 
 import static extension ar.edu.unsam.profesores.controller.TestHelpers.*
-import org.springframework.test.annotation.DirtiesContext
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -63,7 +63,7 @@ class ProfesorControllerTest {
 
 	@Test
 	@DisplayName("podemos actualizar la información de un profesor")
-	@DirtiesContext
+	@Transactional
 	def void actualizarProfesor() {
 		val profesor = getProfesor(ID_PROFESOR)
 		val materias = repoMaterias.findByNombre("Diseño de Sistemas")
@@ -71,9 +71,9 @@ class ProfesorControllerTest {
 		val materiaNueva = materias.head
 		profesor.agregarMateria(materiaNueva)
 		updateProfesor(ID_PROFESOR, profesor)
-		val nuevoProfesor = getProfesor(ID_PROFESOR)
+		val profesorActualizado = getProfesor(ID_PROFESOR)
 		val materiasDelProfesor = profesor.materias.size
-		assertEquals(materiasDelProfesor, nuevoProfesor.materias.size)
+		assertEquals(materiasDelProfesor, profesorActualizado.materias.size)
 	}
 	
 	protected def void updateProfesor(long idProfesor, Profesor profesor) {

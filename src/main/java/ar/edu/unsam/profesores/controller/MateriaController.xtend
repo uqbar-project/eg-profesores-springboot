@@ -22,14 +22,14 @@ class MateriaController {
 	
 	@GetMapping(value = "/materias")
 	@ApiOperation("Permite conocer todas las materias cargadas en el sistema")
-	def getZonas() {
+	def getMaterias() {
 		this.materiaRepository.findAll
 	}
   
 	@GetMapping(value="/materias/{id}")
 	@ApiOperation("Dado un identificador de una materia, permite conocer sus datos y todas las personas que la dictan.")
   def getMateria(@PathVariable Long id) {
-
+	
 		// Recibimos n registros de materias
   	val materiasDTO = this
   		.materiaRepository
