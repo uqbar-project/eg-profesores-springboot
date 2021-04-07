@@ -263,12 +263,12 @@ Por último, tenemos un test de integración que va a producir un efecto colater
 - tomar la información de un profesor
 - producir un efecto (dictará una materia nueva) y persistir ese efecto haciendo una llamada http PUT
 - hacer la llamada GET verificando que el efecto se persitió (comparando con el valor que tenía antes del cambio)
-- la anotación `@DirtiesContext` asegura hacer un rollback de la transacción para que los cambios que hicimos dentro del test no se persistan. Esto elimina la dependencia entre tests (de lo contrario el orden en el que evaluemos los casos de prueba pueden ser exitosos o fallidos, lo que se conoce como [_flaky test_](https://engineering.atspotify.com/2019/11/18/test-flakiness-methods-for-identifying-and-dealing-with-flaky-tests/))
+- podríamos utilizar la anotación `@DirtiesContext` para cada test, lo que reinicia todo el contexto de ejecución (levanta una nueva instancia de Springboot, lo que puede resultar costoso). En lugar de eso vamos a trabajar con la anotación @Transactional, que simplemente hace un rollback de la transacción para que los cambios que hicimos dentro del test no se persistan. Esto elimina la dependencia entre tests (de lo contrario el orden en el que evaluemos los casos de prueba pueden ser exitosos o fallidos, lo que se conoce como [_flaky test_](https://engineering.atspotify.com/2019/11/18/test-flakiness-methods-for-identifying-and-dealing-with-flaky-tests/))
 
 ```xtend
 	@Test
 	@DisplayName("podemos actualizar la información de un profesor")
-	@DirtiesContext
+	@Transactional
 	def void actualizarProfesor() {
 		val profesor = getProfesor(ID_PROFESOR)
 		val materias = repoMaterias.findByNombre("Diseño de Sistemas")
@@ -276,9 +276,9 @@ Por último, tenemos un test de integración que va a producir un efecto colater
 		val materiaNueva = materias.head
 		profesor.agregarMateria(materiaNueva)
 		updateProfesor(ID_PROFESOR, profesor)
-		val nuevoProfesor = getProfesor(ID_PROFESOR)
+		val profesorActualizado = getProfesor(ID_PROFESOR)
 		val materiasDelProfesor = profesor.materias.size
-		assertEquals(materiasDelProfesor, nuevoProfesor.materias.size)
+		assertEquals(materiasDelProfesor, profesorActualizado.materias.size)
 	}
 ```
 
